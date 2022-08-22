@@ -4,6 +4,7 @@
 
 <script>
 import Drawflow from "@/components/Drawflow.vue";
+//import Header from "./components/Header.vue";
 
 export default {
   components: {
@@ -13,7 +14,6 @@ export default {
 </script>
 
 <style>
-/*
 *,
 :after,
 :before {
@@ -34,7 +34,6 @@ body {
   padding: 0;
   background: #181818;
   color: #f7f7f7;
-  font-family: sans-serif;
 }
 #app {
   margin: 0px;
@@ -44,5 +43,4 @@ body {
 .el-main {
   padding: 0;
 }
-*/
 </style>
