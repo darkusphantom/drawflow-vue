@@ -51,17 +51,21 @@ import styleDrawflow from "drawflow/dist/drawflow.min.css";
 import style from "../assets/style.css";
 import {
   onMounted,
+  onUpdated,
   shallowRef,
   h,
   getCurrentInstance,
   render,
   readonly,
   ref,
+  watch,
 } from "vue";
 import { ListNodes } from "../assets/data/listNodes.js";
-import { drawflowData2 } from "../assets/data/drawflow.js";
-import Node1 from "./nodes/Node1.vue";
-import Node2 from "./nodes/Node2.vue";
+import { drawflowData } from "../assets/data/drawflow.js";
+import CardValue from "./CardValue.vue";
+import CardOperations from "./CardOperations.vue";
+import CardConditional from "./CardConditional.vue";
+import CardLoop from "./CardLoop.vue";
 
 // Initialization drawflow
 const listNodes = readonly(ListNodes);
@@ -143,10 +147,11 @@ const addNodeToDrawFlow = (name, pos_x, pos_y) => {
   );
 };
 
+
 //Life Cycle
 onMounted(() => {
   const elements = [...document.getElementsByClassName("drag-drawflow")];
-  elements.forEach(element => {
+  elements.forEach((element) => {
     element.addEventListener("touchend", drop, false);
     element.addEventListener("touchmove", positionMobile, false);
     element.addEventListener("touchstart", drag, false);
@@ -160,10 +165,19 @@ onMounted(() => {
   );
   editor.value.start();
 
-  editor.value.registerNode("Node1", Node1, {}, {});
-  editor.value.registerNode("Node2", Node2, {}, {});
-  editor.value.import(drawflowData2);
+  editor.value.registerNode("Value", CardValue, {}, {});
+  editor.value.registerNode("Conditional", CardConditional, {}, {});
+  editor.value.registerNode("Loop", CardLoop, {}, {});
+  editor.value.registerNode("Add", CardOperations, {}, {});
+  editor.value.registerNode("Subs", CardOperations, {}, {});
+  editor.value.registerNode("Mult", CardOperations, {}, {});
+  editor.value.registerNode("Div", CardOperations, {}, {});
+  //editor.value.import(drawflowData);
 });
+
+onUpdated(() => {
+  console.log(editor.value);
+})
 </script>
 
 <style scoped>
@@ -203,5 +217,8 @@ onMounted(() => {
   background: #2b2c30;
   background-size: 20px 20px;
   background-image: radial-gradient(#494949 1px, transparent 1px);
+}
+.drawflow-node {
+  width: auto;
 }
 </style>
