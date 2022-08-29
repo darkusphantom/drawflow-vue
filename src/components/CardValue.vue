@@ -22,8 +22,7 @@
 </template>
 
 <script setup>
-/* eslint-disable*/
-import { onMounted, onUpdated, ref, getCurrentInstance, nextTick } from "vue";
+import { onMounted, ref, getCurrentInstance, nextTick } from "vue";
 import Card from "./card/Card.vue";
 import CardContainer from "./card/CardContainer.vue";
 import CardHeader from "./card/CardHeader.vue";
@@ -37,7 +36,6 @@ const dataNode = ref({});
 const optionSelected = ref("");
 const input = ref("");
 let drawflow = null;
-let cardTitle = ref("");
 
 // Methods
 const updateSelect = (value) => {
@@ -58,5 +56,4 @@ onMounted(async () => {
   optionSelected.value = dataNode.value.data.option;
   input.value = dataNode.value.data.input;
 });
-
 </script>

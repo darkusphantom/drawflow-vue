@@ -1,7 +1,7 @@
 <template>
   <div class="card-condition">
-    <p class="condition-value">Value 1</p>
-    <el-select>
+    <p class="condition-value">{{ valueA }}</p>
+    <el-select v-model="selectedOption" @change="$emit('condition', $event)">
       <el-option
         v-for="item in options"
         :key="item.value"
@@ -9,12 +9,31 @@
         :value="item.value"
       />
     </el-select>
-    <p class="condition-value">Value 2</p>
+    <p class="condition-value">{{ valueB }}</p>
   </div>
-  <p class="condition-value">Final Value</p>
+  <p class="condition-final">{{ result }}</p>
 </template>
 
 <script setup>
+import { defineProps, defineEmits, ref } from "vue";
+
+defineProps({
+  valueA: {
+    type: Number,
+    default: 0,
+  },
+  valueB: {
+    type: Number,
+    default: 0,
+  },
+  result: {
+    type: Boolean,
+    default: false,
+  },
+});
+defineEmits(["condition"]);
+
+const selectedOption = ref("");
 const options = [
   { label: "==", value: "equal" },
   { label: "!=", value: "nequal" },
@@ -28,8 +47,10 @@ const options = [
 <style scoped>
 .card-condition {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  height: 95px;
   margin-bottom: 24px;
 }
 
@@ -38,13 +59,13 @@ const options = [
 }
 
 .condition-value {
-  color: #000;
+  color: #fff;
   font-size: 1.1rem;
 }
 
-.condition-value:last-child {
+.condition-final {
   text-align: center;
   font-size: 1.2rem;
-  font-weight: 500;
+  font-weight: 700;
 }
 </style>

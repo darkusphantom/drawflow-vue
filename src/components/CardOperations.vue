@@ -89,7 +89,7 @@ const getValueInputNodes = (nodes) => {
   return sumAllInputs(numbers);
 };
 
-const geInputNodes = (input) => {
+const getInputNodes = (input) => {
   const nodes = input.connections.map((connection) =>
     drawflow.getNodeFromId(connection.node)
   );
@@ -105,12 +105,12 @@ const setInputNodes = (numberInput) => {
   const input2 = inputs.input_2;
 
   if (numberInput === 1) {
-    const nodes = geInputNodes(input1);
+    const nodes = getInputNodes(input1);
     valueA.value = getValueInputNodes(nodes);
   }
 
   if (numberInput === 2) {
-    const nodesId = geInputNodes(input2);
+    const nodesId = getInputNodes(input2);
     valueB.value = getValueInputNodes(nodesId);
   }
 };
