@@ -62,6 +62,8 @@ import {
 } from "vue";
 import { ListNodes } from "../assets/data/listNodes.js";
 import { drawflowData } from "../assets/data/drawflow.js";
+import CardStart from "./CardStart.vue";
+import CardLog from "./CardLog.vue";
 import CardValue from "./CardValue.vue";
 import CardOperations from "./CardOperations.vue";
 import CardConditional from "./CardConditional.vue";
@@ -147,7 +149,6 @@ const addNodeToDrawFlow = (name, pos_x, pos_y) => {
   );
 };
 
-
 //Life Cycle
 onMounted(() => {
   const elements = [...document.getElementsByClassName("drag-drawflow")];
@@ -165,6 +166,8 @@ onMounted(() => {
   );
   editor.value.start();
 
+  editor.value.registerNode("Start", CardStart, {}, {});
+  editor.value.registerNode("Log", CardLog, {}, {});
   editor.value.registerNode("Value", CardValue, {}, {});
   editor.value.registerNode("Conditional", CardConditional, {}, {});
   editor.value.registerNode("Loop", CardLoop, {}, {});
@@ -177,7 +180,7 @@ onMounted(() => {
 
 onUpdated(() => {
   console.log(editor.value);
-})
+});
 </script>
 
 <style scoped>
