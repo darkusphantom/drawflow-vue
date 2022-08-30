@@ -60,16 +60,22 @@ const operations = (condition) => {
 const getValueInputNode = (node) => {
   if (!node) return;
 
-  /*const getResult = (data) => { //Recursividad para obtener el result en el objeto data
+  const getResult = (data) => {
+    //Recursividad para obtener el result en el objeto data
     const isDataEmpty = !Object.entries(data).length;
     const isResult = data.result !== undefined;
 
     if (isDataEmpty) return;
     if (isResult) return data.result;
     if (!isResult) return getResult(data.data);
-  };*/
+  };
 
-  return node.data.input ? Number(node.data.input) : 0;
+  const isCardValue = node.name === "Value";
+  if (isCardValue) {
+    return node.data.input ? Number(node.data.input) : 0;
+  } else {
+    return Number(getResult(node.data));
+  }
 };
 
 const getInputNode = (input) => {
