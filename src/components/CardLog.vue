@@ -39,10 +39,19 @@ const getValueInputNode = (node) => {
   };
 
   const isCardValue = node.name === "Value";
+  const isCardConditional = node.name === "Conditional";
+
   if (isCardValue) {
     return node.data.input ? Number(node.data.input) : 0;
-  } else {
+  }
+
+  if (!isCardConditional && !isCardValue) {
     return Number(getResult(node.data));
+  }
+
+  if (isCardConditional) {
+    console.log(node.data);
+    return getResult(node.data);
   }
 };
 
@@ -75,6 +84,7 @@ onMounted(async () => {
 <style>
 .card-log {
   color: #fff;
+  margin-bottom: 12px;
   font-size: 1.1rem;
   font-weight: 700;
   text-align: center;
