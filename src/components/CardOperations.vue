@@ -11,15 +11,7 @@
   </div>
 </template>
 <script setup>
-/* eslint-disable */
-import {
-  onMounted,
-  onUpdated,
-  ref,
-  watch,
-  getCurrentInstance,
-  nextTick,
-} from "vue";
+import { onMounted, ref, getCurrentInstance, nextTick } from "vue";
 import Card from "./card/Card.vue";
 import CardContainer from "./card/CardContainer.vue";
 import CardHeader from "./card/CardHeader.vue";
@@ -62,8 +54,8 @@ const sumAllInputs = (numbers) =>
 const getValueInputNodes = (nodes) => {
   if (!nodes) return 0;
 
-  let total = 0;
-  const getResult = (data) => { //Recursividad para obtener el result en el objeto data
+  //Recursividad para obtener el result en el objeto data
+  const getResult = (data) => {
     const isDataEmpty = !Object.entries(data).length;
     const isResult = data.result !== undefined;
 
@@ -75,49 +67,48 @@ const getValueInputNodes = (nodes) => {
   const numbers = nodes.map((node) => {
     const nodeName = node.name.toLowerCase();
 
-    if (nodeName === "value") { //Retorna el valor del input en las cards value
+    //Retorna el valor del input en las cards value
+    if (nodeName === "value")
       return node.data.input ? Number(node.data.input) : 0;
-    }
 
-    if (!(nodeName === "value")) { //Retorna el valor 
-      if (!node.data.result) {
-        return Number(getResult(node.data));
-      }
+    //Retorna el valor
+    if (!(nodeName === "value")) {
+      if (!node.data.result) return Number(getResult(node.data));
     }
   });
 
   return sumAllInputs(numbers);
 };
 
-const geInputNodes = (input) => {
+const getInputNodes = (input) => {
   const nodes = input.connections.map((connection) =>
     drawflow.getNodeFromId(connection.node)
   );
 
-  if (input.connections.length) {
-    return nodes;
-  }
+  if (input.connections.length) return nodes;
 };
 
-const setInputNodes = (numberInput) => {
-  const { inputs } = drawflow.getNodeFromId(nodeId.value);
+const setInputNodes = (numberInput, inputs) => {
   const input1 = inputs.input_1;
   const input2 = inputs.input_2;
 
   if (numberInput === 1) {
-    const nodes = geInputNodes(input1);
+    const nodes = getInputNodes(input1);
     valueA.value = getValueInputNodes(nodes);
   }
 
   if (numberInput === 2) {
-    const nodesId = geInputNodes(input2);
+    const nodesId = getInputNodes(input2);
     valueB.value = getValueInputNodes(nodesId);
   }
 };
 
 const onCalculate = () => {
-  setInputNodes(1);
-  setInputNodes(2);
+  const { inputs } = drawflow.getNodeFromId(nodeId.value);
+
+  setInputNodes(1, inputs);
+  setInputNodes(2, inputs);
+
   if (node1.value && node2.value) operations(operationName.value);
 };
 
@@ -130,5 +121,14 @@ onMounted(async () => {
   dataNode.value = drawflow.getNodeFromId(nodeId.value);
 
   operationName.value = dataNode.value.name.toLowerCase();
+  valueTotal.value = dataNode.value.result;
+
+  if (dataNode.value.inputs.input_1.connections.length) {
+    setInputNodes(1, dataNode.value.inputs);
+  }
+
+  if (dataNode.value.inputs.input_2.connections.length) {
+    setInputNodes(2, dataNode.value.inputs);
+  }
 });
 </script>
