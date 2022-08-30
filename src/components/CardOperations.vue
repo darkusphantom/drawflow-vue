@@ -23,8 +23,6 @@ import { sum, subs, mult, div, mod, power } from "../utils/Operations.js";
 const element = ref("");
 const nodeId = ref(0);
 const dataNode = ref({}); // Node para la carta principal
-const node1 = ref({}); // Node 1 y 2 son para inputs
-const node2 = ref({});
 let drawflow = null;
 const operationName = ref("Operation");
 const valueA = ref(0);
@@ -109,7 +107,7 @@ const onCalculate = () => {
   setInputNodes(1, inputs);
   setInputNodes(2, inputs);
 
-  if (node1.value && node2.value) operations(operationName.value);
+  operations(operationName.value);
 };
 
 //Flow code
