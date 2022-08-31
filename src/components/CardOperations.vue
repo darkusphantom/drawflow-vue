@@ -24,14 +24,36 @@ const element = ref("");
 const nodeId = ref(0);
 const dataNode = ref({}); // Node para la carta principal
 let drawflow = null;
+
 const operationName = ref("Operation");
 const valueA = ref(0);
 const valueB = ref(0);
 const valueTotal = ref(0);
 
+const script = ref("");
+
 // Methods
 const updateNode = (value) => {
   dataNode.value.data.result = value;
+  dataNode.value.data.valueA = valueA.value;
+  dataNode.value.data.valueB = valueB.value;
+
+  dataNode.value.data.script = `
+      def calculate(operation):
+        a = ${valueA.value}
+        b = ${valueB.value}
+        value = 0\n
+        if operation == 'add': value = a+b
+        if operation == 'subs': value = a-b
+        if operation == 'mult': value = a*b
+        if operation == 'div': value = a/b
+        if operation == 'mod': value = a%b
+        if operation == 'pow': value = a**b\n
+
+      typeOperation = ${operationName.value.toLowerCase()}\n
+      print(calculate(typeOperation))
+    `;
+
   drawflow.updateNodeDataFromId(nodeId.value, dataNode.value);
 };
 
@@ -118,17 +140,10 @@ onMounted(async () => {
 
   nodeId.value = element.value.parentElement.parentElement.id.slice(5);
   dataNode.value = drawflow.getNodeFromId(nodeId.value);
-  dataNode.value.data.operations = {
-    add: "(a,b) => sum(a,b)",
-    subs: "(a,b) => subs(a,b)",
-    mult: "(a,b) => mult(a,b)",
-    div: "(a,b) => div(a,b)",
-    mod: "(a,b) => mod(a,b)",
-    pow: "(a,b) => power(a,b)",
-  };
 
   operationName.value = dataNode.value.name.toLowerCase();
   valueTotal.value = dataNode.value.result;
+  script.value = dataNode.value.script;
 
   if (dataNode.value.inputs.input_1.connections.length) {
     setInputNodes(1, dataNode.value.inputs);

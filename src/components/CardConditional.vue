@@ -40,6 +40,22 @@ const valueB = ref(0);
 // Methods
 const updateSelect = (value) => {
   dataNode.value.data.result = value;
+  dataNode.value.data.script = `
+    def calculate(operation):
+      a = ${valueA.value}
+      b = ${valueB.value}
+      value = 0\n
+      if operation == 'equal': value a == b
+      if operation == 'nequal': value = a != b
+      if operation == 'greatthan': value = a > b
+      if operation == 'lessthan': value = a < b
+      if operation == 'greateq': value = a >= b
+      if operation == 'lesseq': value = a <= b\n
+    
+    typeOperation = ${conditionSelected.value}
+    print(typeOperation)
+    `;
+
   drawflow.updateNodeDataFromId(nodeId.value, dataNode.value);
 };
 

@@ -37,9 +37,11 @@ import { sum, subs, mult, div, mod, power } from "../utils/Operations.js";
 const element = ref("");
 const nodeId = ref(0);
 const dataNode = ref({});
+const script = ref("");
 let drawflow = null;
 
 const inputNodeA = ref(undefined);
+const operationName = ref("");
 const valueA = ref(0);
 const valueB = ref(0);
 const valueInitial = ref(0);
@@ -47,8 +49,28 @@ const valueEnd = ref(0);
 const valueTotal = ref(0);
 
 // Methods
-const updateSelect = (value) => {
+const updateDataNode = (value) => {
   dataNode.value.data.result = value;
+
+  dataNode.value.data.script = `
+      def calculate(operation):
+        if operation == 'add': total += value
+        if operation == 'subs': total -= value
+        if operation == 'mult': total *= value
+        if operation == 'div': total /= value
+        if operation == 'mod': total %= value
+      return total
+
+      i = ${valueInitial.value}
+      max = ${valueEnd.value}
+      value = ${valueB.value}
+      total = 0
+      typeOperation = ${operationName.value.toLowerCase()}
+
+      for i in range(max)
+        print(calculate(typeOperation))
+    `;
+
   drawflow.updateNodeDataFromId(nodeId.value, dataNode.value);
 };
 
@@ -60,7 +82,7 @@ const operations = (operation) => {
   if (operation === "mod") valueTotal.value = mod(valueA.value, valueB.value);
   if (operation === "pow") valueTotal.value = power(valueA.value, valueB.value);
 
-  updateSelect(valueTotal.value);
+  return valueTotal.value;
 };
 
 const getValueInputNode = (node) => {
@@ -99,10 +121,11 @@ const onCalculate = () => {
   valueB.value = getValueNode(inputs.input_1);
 
   const { name } = inputNodeA.value;
-  const operationName = name.toLowerCase();
+  operationName.value = name.toLowerCase();
 
   for (let i = valueInitial.value; i < valueEnd.value; i++) {
-    operations(operationName);
+    const operation = operations(operationName);
+    updateDataNode(operation);
     valueA.value = valueTotal.value;
   }
 };
@@ -115,5 +138,6 @@ onMounted(async () => {
   dataNode.value = drawflow.getNodeFromId(nodeId.value);
 
   valueTotal.value = dataNode.value.result;
+  script.value = dataNode.value.script;
 });
 </script>

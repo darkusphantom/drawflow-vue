@@ -7,10 +7,10 @@ const orange = "orange";
 
 const ListNodes = [
   {
-    name: "Start",
+    name: "Script",
     color: green,
     item: "Start",
-    input: 0,
+    input: 1,
     output: 1,
   },
   {
