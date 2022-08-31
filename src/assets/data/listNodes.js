@@ -32,13 +32,13 @@ const ListNodes = [
     color: orange,
     item: "Conditional",
     input: 2,
-    output: 2,
+    output: 1,
   },
   {
     name: "Loop",
     color: red,
     item: "Loop",
-    input: 1,
+    input: 2,
     output: 2,
   },
   {

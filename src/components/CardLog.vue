@@ -26,33 +26,25 @@ const dataNode = ref({});
 let drawflow = null;
 
 // Methods
+const getResult = (data) => {
+  const isDataEmpty = !Object.entries(data).length;
+  const isResult = data.result !== undefined;
+
+  if (isDataEmpty) return;
+  if (isResult) return data.result;
+  if (!isResult) return getResult(data.data);
+};
+
 const getValueInputNode = (node) => {
   if (!node) return;
 
-  const getResult = (data) => {
-    const isDataEmpty = !Object.entries(data).length;
-    const isResult = data.result !== undefined;
+  return node.data.input ? Number(node.data.input) : 0;
+};
 
-    if (isDataEmpty) return;
-    if (isResult) return data.result;
-    if (!isResult) return getResult(data.data);
-  };
+const getCondition = (node) => {
+  if (!node) return;
 
-  const isCardValue = node.name === "Value";
-  const isCardConditional = node.name === "Conditional";
-
-  if (isCardValue) {
-    return node.data.input ? Number(node.data.input) : 0;
-  }
-
-  if (!isCardConditional && !isCardValue) {
-    return Number(getResult(node.data));
-  }
-
-  if (isCardConditional) {
-    console.log(node.data);
-    return getResult(node.data);
-  }
+  return getResult(node.data);
 };
 
 const getInput = (input) => {
@@ -66,9 +58,15 @@ const showConsole = () => {
   const { inputs } = drawflow.getNodeFromId(nodeId.value);
 
   const data = getInput(inputs.input_1);
-  const value = getValueInputNode(data);
+  const isCardValue = data.name === "Value";
+  const isCardConditional = data.name === "Conditional";
+  let value = 0;
+  let condition = false;
 
-  console.log(value);
+  if (isCardValue) value = getValueInputNode(data);
+  if (isCardConditional) condition = getCondition(data);
+
+  console.log(value, condition);
 };
 
 // Flow code
