@@ -3,27 +3,35 @@
     <Card>
       <CardHeader title="Loop" />
       <CardContainer>
-        <CardConditionValue
-          :valueA="valueInitial"
-          :valueB="valueB"
-          :result="result"
-          @condition="conditionSelected = $event"
+        <CardInput
+          id="loop-initial"
+          title="Initial value"
+          placeholder="Ingresa el valor inicial..."
+          @value="valueInitial = $event"
+        />
+        <CardInput
+          id="loop-to"
+          title="To"
+          placeholder="Ingresa hasta la cantidad de veces a repetir..."
+          @value="valueEnd = $event"
         />
       </CardContainer>
       <el-button type="primary" @click="onCalculate" df-CardConditionValue
         >Calculate</el-button
       >
+      <CardFooter :valueTotal="valueTotal" />
     </Card>
   </div>
 </template>
 
 <script setup>
-/* eslint-disable*/
-import { onMounted, ref, watch, getCurrentInstance, nextTick } from "vue";
+import { onMounted, ref, getCurrentInstance, nextTick } from "vue";
 import Card from "./card/Card.vue";
 import CardContainer from "./card/CardContainer.vue";
 import CardHeader from "./card/CardHeader.vue";
-import CardConditionValue from "./card/CardConditionValue";
+import CardInput from "./card/CardInput.vue";
+import CardFooter from "./card/CardFooter.vue";
+import { sum, subs, mult, div, mod, power } from "../utils/Operations.js";
 
 // Vars
 const element = ref("");
@@ -32,23 +40,11 @@ const dataNode = ref({});
 let drawflow = null;
 
 const inputNodeA = ref(undefined);
-const inputNodeB = ref(undefined);
-const valueInitial = ref(0);
+const valueA = ref(0);
 const valueB = ref(0);
-const outputNodeA = ref(0);
-const outputNodeB = ref(0);
-const outputA = ref(0);
-const outputB = ref(0);
-const result = ref(false);
-
-const conditionSelected = ref("");
-
-//Watch
-watch(outputNodeA, (value) => console.log(value));
-watch(outputNodeB, (value) => console.log(value));
-watch(outputA, (value) => console.log(value));
-watch(outputB, (value) => console.log(value));
-watch(result, (value) => console.log(value));
+const valueInitial = ref(0);
+const valueEnd = ref(0);
+const valueTotal = ref(0);
 
 // Methods
 const updateSelect = (value) => {
@@ -56,16 +52,15 @@ const updateSelect = (value) => {
   drawflow.updateNodeDataFromId(nodeId.value, dataNode.value);
 };
 
-const getCondition = (condition) => {
-  const a = valueInitial.value;
-  const b = valueB.value;
+const operations = (operation) => {
+  if (operation === "add") valueTotal.value = sum(valueA.value, valueB.value);
+  if (operation === "subs") valueTotal.value = subs(valueA.value, valueB.value);
+  if (operation === "mult") valueTotal.value = mult(valueA.value, valueB.value);
+  if (operation === "div") valueTotal.value = div(valueA.value, valueB.value);
+  if (operation === "mod") valueTotal.value = mod(valueA.value, valueB.value);
+  if (operation === "pow") valueTotal.value = power(valueA.value, valueB.value);
 
-  if (condition === "equal") return a === b;
-  if (condition === "nequal") return a !== b;
-  if (condition === "greatthan") return a > b;
-  if (condition === "lessthan") return a < b;
-  if (condition === "greateq") return a >= b;
-  if (condition === "lesseq") return a <= b;
+  updateSelect(valueTotal.value);
 };
 
 const getValueInputNode = (node) => {
@@ -86,61 +81,30 @@ const getValueInputNode = (node) => {
   if (!isCardValue) return Number(getResult(node.data));
 };
 
-const getNode = (input) => {
+const getValueNode = (input) => {
   if (input.connections.length) {
     const node = input.connections[0].node;
-    return drawflow.getNodeFromId(node);
-  }
-};
+    inputNodeA.value = drawflow.getNodeFromId(node);
 
-const setInputNodes = (numberInput, input) => {
-  if (numberInput === 1) {
-    inputNodeA.value = getNode(input);
-    valueInitial.value = getValueInputNode(inputNodeA.value);
+    return getValueInputNode(inputNodeA.value);
   }
 
-  if (numberInput === 2) {
-    inputNodeB.value = getNode(input);
-    valueB.value = getValueInputNode(inputNodeB.value);
-  }
-};
-
-const setOutputNodes = (numberInput, output) => {
-  if (numberInput === 1) {
-    outputNodeA.value = getNode(output);
-    outputA.value = getValueInputNode(outputNodeA.value);
-  }
-
-  if (numberInput === 2) {
-    outputNodeB.value = getNode(output);
-    outputB.value = getValueInputNode(outputNodeB.value);
-  }
+  return 0;
 };
 
 const onCalculate = () => {
-  const { inputs, outputs } = drawflow.getNodeFromId(nodeId.value);
+  if (!valueInitial.value && !valueEnd.value) return;
 
-  setInputNodes(1, inputs.input_1);
-  setInputNodes(2, inputs.input_2);
+  const { inputs } = drawflow.getNodeFromId(nodeId.value);
+  valueB.value = getValueNode(inputs.input_1);
 
-  if (!inputNodeA.value && !inputNodeB.value) return;
+  const { name } = inputNodeA.value;
+  const operationName = name.toLowerCase();
 
-  result.value = getCondition(conditionSelected);
-
-  const saludar = (mensaje) => {
-    console.log(mensaje);
-  };
-
-  const llamarSaludo = (saludo, callback) => {
-    callback(saludo)
-  };
-
-  llamarSaludo("Hola bb", saludar);
-
-
-  /*if (continueLoop) {
-    setOutputNodes(1, outputs.output_1);
-  }*/
+  for (let i = valueInitial.value; i < valueEnd.value; i++) {
+    operations(operationName);
+    valueA.value = valueTotal.value;
+  }
 };
 
 drawflow = getCurrentInstance().appContext.config.globalProperties.$df.value;
@@ -150,6 +114,6 @@ onMounted(async () => {
   nodeId.value = element.value.parentElement.parentElement.id.slice(5);
   dataNode.value = drawflow.getNodeFromId(nodeId.value);
 
-  result.value = dataNode.value.result;
+  valueTotal.value = dataNode.value.result;
 });
 </script>

@@ -115,8 +115,17 @@ drawflow = getCurrentInstance().appContext.config.globalProperties.$df.value;
 
 onMounted(async () => {
   await nextTick();
+
   nodeId.value = element.value.parentElement.parentElement.id.slice(5);
   dataNode.value = drawflow.getNodeFromId(nodeId.value);
+  dataNode.value.data.operations = {
+    add: "(a,b) => sum(a,b)",
+    subs: "(a,b) => subs(a,b)",
+    mult: "(a,b) => mult(a,b)",
+    div: "(a,b) => div(a,b)",
+    mod: "(a,b) => mod(a,b)",
+    pow: "(a,b) => power(a,b)",
+  };
 
   operationName.value = dataNode.value.name.toLowerCase();
   valueTotal.value = dataNode.value.result;
