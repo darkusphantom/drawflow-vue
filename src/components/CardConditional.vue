@@ -1,7 +1,7 @@
 <template>
   <div ref="element">
     <Card>
-      <CardHeader :title="cardTitle" />
+      <CardHeader :title="cardTitle" :nodeId="nodeId" />
       <CardContainer>
         <CardConditionValue
           :valueA="valueA"

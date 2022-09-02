@@ -1,7 +1,7 @@
 <template>
   <div ref="element">
     <Card>
-      <CardHeader title="Start" />
+      <CardHeader title="Start" :nodeId="nodeId" />
       <CardContainer>
         <p class="card-start">Here's start your adventure</p>
       </CardContainer>

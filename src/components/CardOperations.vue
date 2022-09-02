@@ -1,7 +1,7 @@
 <template>
   <div ref="element">
     <Card>
-      <CardHeader :title="operationName" />
+      <CardHeader :title="operationName" :nodeId="nodeId" />
       <CardContainer>
         <CardOperationValues :valueA="valueA" :valueB="valueB" />
         <el-button type="primary" @click="onCalculate">Calculate</el-button>

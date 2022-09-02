@@ -1,7 +1,7 @@
 <template>
   <div ref="element">
     <Card>
-      <CardHeader title="Card" />
+      <CardHeader title="Card" :nodeId="nodeId" />
       <CardContainer>
         <CardSelect
           title="Select a type:"

@@ -1,7 +1,7 @@
 <template>
   <div ref="element">
     <Card>
-      <CardHeader title="Loop" />
+      <CardHeader title="Loop" :nodeId="nodeId" />
       <CardContainer>
         <CardInput
           id="loop-initial"

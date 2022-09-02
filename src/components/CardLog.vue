@@ -1,7 +1,7 @@
 <template>
   <div ref="element">
     <Card>
-      <CardHeader title="Card" />
+      <CardHeader title="Card" :nodeId="nodeId" />
       <CardContainer>
         <p class="card-log">
           Press "calculate", then F12 and check the console
