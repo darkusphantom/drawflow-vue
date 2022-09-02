@@ -7,10 +7,17 @@ const orange = "orange";
 
 const ListNodes = [
   {
-    name: "Start",
-    color: green,
-    item: "Start",
+    name: "Numbers",
+    color: black,
+    item: "Value",
     input: 0,
+    output: 1,
+  },
+  {
+    name: "Script",
+    color: green,
+    item: "Script",
+    input: 1,
     output: 1,
   },
   {
@@ -19,13 +26,6 @@ const ListNodes = [
     item: "Log",
     input: 1,
     output: 0,
-  },
-  {
-    name: "Numbers",
-    color: black,
-    item: "Value",
-    input: 0,
-    output: 1,
   },
   {
     name: "Conditional",

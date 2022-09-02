@@ -62,7 +62,7 @@ import {
 } from "vue";
 import { ListNodes } from "../assets/data/listNodes.js";
 import { drawflowData } from "../assets/data/drawflow.js";
-import CardStart from "./CardStart.vue";
+import CardScript from "./CardScript.vue";
 import CardLog from "./CardLog.vue";
 import CardValue from "./CardValue.vue";
 import CardOperations from "./CardOperations.vue";
@@ -166,7 +166,7 @@ onMounted(() => {
   );
   editor.value.start();
 
-  editor.value.registerNode("Start", CardStart, {}, {});
+  editor.value.registerNode("Script", CardScript, {}, {});
   editor.value.registerNode("Log", CardLog, {}, {});
   editor.value.registerNode("Value", CardValue, {}, {});
   editor.value.registerNode("Conditional", CardConditional, {}, {});
