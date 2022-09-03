@@ -2,7 +2,12 @@
   <el-container>
     <el-header class="header">
       <h3>Drawflow - Learn Programming</h3>
-      <el-button type="primary" @click="exportEditor">Export</el-button>
+      <div class="container-button">
+        <el-button type="danger" @click="clearEditor">Clear</el-button>
+        <el-button type="primary" @click="exportEditor"
+          >Save / Export</el-button
+        >
+      </div>
     </el-header>
     <el-container class="container">
       <el-aside width="250px" class="column">
@@ -36,9 +41,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
-          >Confirm</el-button
-        >
+        <el-button type="primary" @click="importEditor">Save</el-button>
       </span>
     </template>
   </el-dialog>
@@ -61,13 +64,17 @@ import {
   watch,
 } from "vue";
 import { ListNodes } from "../assets/data/listNodes.js";
-import { drawflowData } from "../assets/data/drawflow.js";
 import CardScript from "./CardScript.vue";
 import CardLog from "./CardLog.vue";
 import CardValue from "./CardValue.vue";
 import CardOperations from "./CardOperations.vue";
 import CardConditional from "./CardConditional.vue";
 import CardLoop from "./CardLoop.vue";
+import {
+  getSavedEditor,
+  saveEditor,
+  deleteEditor,
+} from "../utils/editorLocalStorage.js";
 
 // Initialization drawflow
 const listNodes = readonly(ListNodes);
@@ -77,6 +84,16 @@ const dialogData = ref({});
 const Vue = { version: 3, h, render };
 const internalInstance = getCurrentInstance();
 internalInstance.appContext.app._context.config.globalProperties.$df = editor;
+
+const clearEditor = () => {
+  editor.value.clearModuleSelected();
+  deleteEditor();
+};
+
+const importEditor = () => {
+  saveEditor(dialogData.value);
+  dialogVisible.value = false;
+};
 
 const exportEditor = () => {
   dialogData.value = editor.value.export();
@@ -149,6 +166,10 @@ const addNodeToDrawFlow = (name, pos_x, pos_y) => {
   );
 };
 
+watch(editor, (value) => {
+  console.log(value);
+});
+
 //Life Cycle
 onMounted(() => {
   const elements = [...document.getElementsByClassName("drag-drawflow")];
@@ -175,7 +196,10 @@ onMounted(() => {
   editor.value.registerNode("Subs", CardOperations, {}, {});
   editor.value.registerNode("Mult", CardOperations, {}, {});
   editor.value.registerNode("Div", CardOperations, {}, {});
-  //editor.value.import(drawflowData);
+
+  getSavedEditor();
+  const editorLocalStorage = JSON.parse(localStorage.getItem("PRGS_V1"));
+  editor.value.import(editorLocalStorage);
 });
 
 onUpdated(() => {

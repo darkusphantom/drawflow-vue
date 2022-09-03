@@ -39,7 +39,7 @@ const ListNodes = [
     color: red,
     item: "Loop",
     input: 1,
-    output: 2,
+    output: 1,
   },
   {
     name: "Add",
