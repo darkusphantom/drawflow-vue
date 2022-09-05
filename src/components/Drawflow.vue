@@ -192,6 +192,8 @@ onMounted(() => {
   editor.value.registerNode("Subs", CardOperations, {}, {});
   editor.value.registerNode("Mult", CardOperations, {}, {});
   editor.value.registerNode("Div", CardOperations, {}, {});
+  editor.value.registerNode("Mod", CardOperations, {}, {});
+  editor.value.registerNode("Pow", CardOperations, {}, {});
 
   getSavedEditor();
   const editorLocalStorage = JSON.parse(localStorage.getItem("PRGS_V1"));

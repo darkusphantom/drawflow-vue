@@ -31,13 +31,14 @@ body {
   max-height: calc(100vh - 40px);
   margin: 20px;
   padding: 0;
-  /*background: #181818;*/
+  background: #181818;
   color: #f7f7f7;
 }
 #app {
   margin: 0px;
   border-radius: 8px;
   border: 1px solid #494949;
+  box-shadow: 0 0 10px #545050;
 }
 .el-main {
   padding: 0;
