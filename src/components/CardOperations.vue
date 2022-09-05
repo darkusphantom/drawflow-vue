@@ -3,7 +3,7 @@
     <Card>
       <CardHeader :title="operationName" :nodeId="nodeId" />
       <CardContainer>
-        <CardOperationValues :valueA="valueA" :valueB="valueB" />
+        <CardOperationValues :value_1="value_1" :value_2="value_2" />
         <el-button type="primary" @click="onCalculate">Calculate</el-button>
       </CardContainer>
       <CardFooter :valueTotal="valueTotal" />
@@ -26,22 +26,18 @@ const dataNode = ref({}); // Node para la carta principal
 let drawflow = null;
 
 const operationName = ref("Operation");
-const valueA = ref(0);
-const valueB = ref(0);
+const value_1 = ref(0);
+const value_2 = ref(0);
 const valueTotal = ref(0);
 
 const script = ref("");
 
 // Methods
-const updateNode = (value) => {
-  dataNode.value.data.result = value;
-  dataNode.value.data.valueA = valueA.value;
-  dataNode.value.data.valueB = valueB.value;
-
+const buildScript = () => {
   dataNode.value.data.script = `
       def calculate(operation):
-        a = ${valueA.value}
-        b = ${valueB.value}
+        a = ${value_1.value}
+        b = ${value_2.value}
         value = 0\n
         if operation == 'add': value = a+b
         if operation == 'subs': value = a-b
@@ -53,19 +49,24 @@ const updateNode = (value) => {
       typeOperation = ${operationName.value.toLowerCase()}\n
       print(calculate(typeOperation))
     `;
-
-  drawflow.updateNodeDataFromId(nodeId.value, dataNode.value);
 };
 
-const operations = (operation) => {
-  if (operation === "add") valueTotal.value = sum(valueA.value, valueB.value);
-  if (operation === "subs") valueTotal.value = subs(valueA.value, valueB.value);
-  if (operation === "mult") valueTotal.value = mult(valueA.value, valueB.value);
-  if (operation === "div") valueTotal.value = div(valueA.value, valueB.value);
-  if (operation === "mod") valueTotal.value = mod(valueA.value, valueB.value);
-  if (operation === "pow") valueTotal.value = power(valueA.value, valueB.value);
+const updateNode = (value) => {
+  dataNode.value.data.total = value;
+  dataNode.value.data.value_1 = value_1.value;
+  dataNode.value.data.value_2 = value_2.value;
+  buildScript();
 
-  updateNode(valueTotal.value);
+  drawflow.updateNodeDataFromId(nodeId.value, dataNode.value.data);
+};
+
+const calculateOperation = (operation) => {
+  if (operation === "add") return sum(value_1.value, value_2.value);
+  if (operation === "subs") return subs(value_1.value, value_2.value);
+  if (operation === "mult") return mult(value_1.value, value_2.value);
+  if (operation === "div") return div(value_1.value, value_2.value);
+  if (operation === "mod") return mod(value_1.value, value_2.value);
+  if (operation === "pow") return power(value_1.value, value_2.value);
 };
 
 const sumAllInputs = (numbers) =>
@@ -74,27 +75,12 @@ const sumAllInputs = (numbers) =>
 const getValueInputNodes = (nodes) => {
   if (!nodes) return 0;
 
-  //Recursividad para obtener el result en el objeto data
-  const getResult = (data) => {
-    const isDataEmpty = !Object.entries(data).length;
-    const isResult = data.result !== undefined;
-
-    if (isDataEmpty) return;
-    if (isResult) return data.result;
-    if (!isResult) return getResult(data.data);
-  };
-
   const numbers = nodes.map((node) => {
     const nodeName = node.name.toLowerCase();
+    const isNumberCard = nodeName === "value";
 
-    //Retorna el valor del input en las cards value
-    if (nodeName === "value")
-      return node.data.input ? Number(node.data.input) : 0;
-
-    //Retorna el valor
-    if (!(nodeName === "value")) {
-      if (!node.data.result) return Number(getResult(node.data));
-    }
+    if (isNumberCard) return node.data.input ? Number(node.data.input) : 0;
+    if (!isNumberCard) return Number(node.data.total);
   });
 
   return sumAllInputs(numbers);
@@ -114,12 +100,12 @@ const setInputNodes = (numberInput, inputs) => {
 
   if (numberInput === 1) {
     const nodes = getInputNodes(input1);
-    valueA.value = getValueInputNodes(nodes);
+    value_1.value = getValueInputNodes(nodes);
   }
 
   if (numberInput === 2) {
     const nodesId = getInputNodes(input2);
-    valueB.value = getValueInputNodes(nodesId);
+    value_2.value = getValueInputNodes(nodesId);
   }
 };
 
@@ -129,10 +115,11 @@ const onCalculate = () => {
   setInputNodes(1, inputs);
   setInputNodes(2, inputs);
 
-  operations(operationName.value);
+  valueTotal.value = calculateOperation(operationName.value);
+  updateNode(valueTotal.value);
 };
 
-//Flow code
+//Main
 drawflow = getCurrentInstance().appContext.config.globalProperties.$df.value;
 
 onMounted(async () => {
@@ -141,8 +128,9 @@ onMounted(async () => {
   nodeId.value = element.value.parentElement.parentElement.id.slice(5);
   dataNode.value = drawflow.getNodeFromId(nodeId.value);
 
+  // If exist any data before mounted, it will set it
   operationName.value = dataNode.value.name.toLowerCase();
-  valueTotal.value = dataNode.value.result;
+  valueTotal.value = dataNode.value.total;
   script.value = dataNode.value.script;
 
   if (dataNode.value.inputs.input_1.connections.length) {

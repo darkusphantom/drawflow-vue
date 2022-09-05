@@ -2,11 +2,11 @@
   <div class="card-values">
     <p class="card-value">
       Value A:
-      <span> {{ valueA }} </span>
+      <span> {{ value_1 }} </span>
     </p>
     <p class="card-value">
       Value B:
-      <span> {{ valueB }}</span>
+      <span> {{ value_2 }}</span>
     </p>
   </div>
 </template>
@@ -14,11 +14,11 @@
 <script setup>
 import { defineProps } from "vue";
 defineProps({
-  valueA: {
+  value_1: {
     type: Number,
     default: 0,
   },
-  valueB: {
+  value_2: {
     type: Number,
     default: 0,
   },

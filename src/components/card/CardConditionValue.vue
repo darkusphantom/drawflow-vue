@@ -1,7 +1,11 @@
 <template>
   <div class="card-condition">
     <p class="condition-value">{{ valueA }}</p>
-    <el-select v-model="selectedOption" @change="$emit('condition', $event)">
+    <el-select
+      v-model="selectedOption"
+      @change="$emit('condition', $event)"
+      df-condition
+    >
       <el-option
         v-for="item in options"
         :key="item.value"

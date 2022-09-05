@@ -5,8 +5,8 @@
       <CardContainer>
         <CardInput
           id="value"
-          title="Ingresa un valor:"
-          placeholder="Ingresa el valor..."
+          title="Ingresa un número:"
+          placeholder="0"
           @value="updateInput($event)"
           df-input
         />
@@ -34,7 +34,7 @@ let drawflow = null;
 const updateInput = (value) => {
   input.value = value;
   dataNode.value.data.script = `number${dataNode.value.id} = ${value}`;
-  drawflow.updateNodeDataFromId(nodeId.value, dataNode.value);
+  drawflow.updateNodeDataFromId(nodeId.value, dataNode.value.data);
 };
 
 // Flow code
@@ -42,6 +42,7 @@ drawflow = getCurrentInstance().appContext.config.globalProperties.$df.value;
 
 onMounted(async () => {
   await nextTick();
+
   nodeId.value = element.value.parentElement.parentElement.id.slice(5);
   dataNode.value = drawflow.getNodeFromId(nodeId.value);
 

@@ -4,10 +4,11 @@
       <CardHeader :title="cardTitle" :nodeId="nodeId" />
       <CardContainer>
         <CardConditionValue
-          :valueA="valueA"
-          :valueB="valueB"
-          :result="result"
+          :valueA="value_1"
+          :valueB="value_2"
+          :result="condition"
           @condition="conditionSelected = $event"
+          df-condition
         />
       </CardContainer>
       <el-button type="primary" @click="onCalculate" df-CardConditionValue
@@ -28,22 +29,21 @@ import CardConditionValue from "./card/CardConditionValue";
 const element = ref("");
 const nodeId = ref(0);
 const dataNode = ref({});
-const result = ref(false);
+const condition = ref(false);
 let drawflow = null;
 const conditionSelected = ref("");
 let cardTitle = ref("Conditional");
 const nodeA = ref(undefined);
 const nodeB = ref(undefined);
-const valueA = ref(0);
-const valueB = ref(0);
+const value_1 = ref(0);
+const value_2 = ref(0);
 
 // Methods
-const updateSelect = (value) => {
-  dataNode.value.data.result = value;
+const buildScript = () => {
   dataNode.value.data.script = `
     def calculate(operation):
-      a = ${valueA.value}
-      b = ${valueB.value}
+      a = ${value_1.value}
+      b = ${value_2.value}
       value = 0\n
       if operation == 'equal': value a == b
       if operation == 'nequal': value = a != b
@@ -55,49 +55,38 @@ const updateSelect = (value) => {
     typeOperation = ${conditionSelected.value}
     print(typeOperation)
     `;
-
-  drawflow.updateNodeDataFromId(nodeId.value, dataNode.value);
 };
 
-const operations = (condition) => {
-  const a = valueA.value;
-  const b = valueB.value;
+const updateSelect = (value) => {
+  dataNode.value.data.condition = value;
+  buildScript();
 
-  if (condition === "equal") result.value = a === b;
-  if (condition === "nequal") result.value = a !== b;
-  if (condition === "greatthan") result.value = a > b;
-  if (condition === "lessthan") result.value = a < b;
-  if (condition === "greateq") result.value = a >= b;
-  if (condition === "lesseq") result.value = a <= b;
+  drawflow.updateNodeDataFromId(nodeId.value, dataNode.value.data);
+};
 
-  updateSelect(result.value);
+const calculateCondition = (condition) => {
+  const a = value_1.value;
+  const b = value_2.value;
+
+  if (condition === "equal") return a === b;
+  if (condition === "nequal") return a !== b;
+  if (condition === "greatthan") return a > b;
+  if (condition === "lessthan") return a < b;
+  if (condition === "greateq") return a >= b;
+  if (condition === "lesseq") return a <= b;
 };
 
 const getValueInputNode = (node) => {
   if (!node) return;
 
-  const getResult = (data) => {
-    //Recursividad para obtener el result en el objeto data
-    const isDataEmpty = !Object.entries(data).length;
-    const isResult = data.result !== undefined;
-
-    if (isDataEmpty) return;
-    if (isResult) return data.result;
-    if (!isResult) return getResult(data.data);
-  };
-
   const isCardValue = node.name === "Value";
-  if (isCardValue) {
-    return node.data.input ? Number(node.data.input) : 0;
-  } else {
-    return Number(getResult(node.data));
-  }
+  if (isCardValue) return node.data.input ? Number(node.data.input) : 0;
+  if (!isCardValue) return Number(node.data.total);
 };
 
 const getInputNode = (input) => {
   if (input.connections.length) {
     const node = input.connections[0].node;
-
     return drawflow.getNodeFromId(node);
   }
 };
@@ -109,12 +98,12 @@ const setInputNodes = (numberInput) => {
 
   if (numberInput === 1) {
     nodeA.value = getInputNode(input1);
-    valueA.value = getValueInputNode(nodeA.value);
+    value_1.value = getValueInputNode(nodeA.value);
   }
 
   if (numberInput === 2) {
     nodeB.value = getInputNode(input2);
-    valueB.value = getValueInputNode(nodeB.value);
+    value_2.value = getValueInputNode(nodeB.value);
   }
 };
 
@@ -122,7 +111,11 @@ const onCalculate = () => {
   setInputNodes(1);
   setInputNodes(2);
 
-  if (nodeA.value && nodeB.value) operations(conditionSelected.value);
+  const isNodesEmpty = !nodeA.value && !nodeB.value;
+  if (isNodesEmpty) return;
+
+  condition.value = calculateCondition(conditionSelected.value);
+  updateSelect(condition.value);
 };
 
 drawflow = getCurrentInstance().appContext.config.globalProperties.$df.value;
@@ -133,6 +126,6 @@ onMounted(async () => {
   dataNode.value = drawflow.getNodeFromId(nodeId.value);
 
   cardTitle.value = dataNode.value.name.toLowerCase();
-  result.value = dataNode.value.result;
+  condition.value = dataNode.value.condition;
 });
 </script>

@@ -17,7 +17,7 @@
               v-model="textarea"
               :rows="8"
               df-script
-              @change="updateSelect"
+              @change="updateScript"
               type="textarea"
               placeholder="Please input"
             />
@@ -51,13 +51,13 @@ const handleClose = (done) => {
     .then(() => {
       done();
     })
-    .catch(() => {
-      // catch error
+    .catch((error) => {
+      console.error(error);
     });
 };
 
 // Methods
-const updateSelect = (value) => {
+const updateScript = (value) => {
   dataNode.value.data.script = value;
   drawflow.updateNodeDataFromId(nodeId.value, dataNode.value);
 };
@@ -78,11 +78,12 @@ const openEditor = () => {
   drawer.value = true;
 };
 
-// Flow code
+//Main
 drawflow = getCurrentInstance().appContext.config.globalProperties.$df.value;
 
 onMounted(async () => {
   await nextTick();
+
   nodeId.value = element.value.parentElement.parentElement.id.slice(5);
   dataNode.value = drawflow.getNodeFromId(nodeId.value);
   textarea.value = dataNode.value.data.script;
