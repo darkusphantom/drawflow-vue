@@ -54,14 +54,12 @@ import styleDrawflow from "drawflow/dist/drawflow.min.css";
 import style from "../assets/style.css";
 import {
   onMounted,
-  onUpdated,
   shallowRef,
   h,
   getCurrentInstance,
   render,
   readonly,
   ref,
-  watch,
 } from "vue";
 import { ListNodes } from "../assets/data/listNodes.js";
 import CardScript from "./CardScript.vue";
@@ -70,7 +68,7 @@ import CardValue from "./CardValue.vue";
 import CardOperations from "./CardOperations.vue";
 import CardConditional from "./CardConditional.vue";
 import CardLoop from "./CardLoop.vue";
-import { getAllPrograms } from '../utils/editorAPI.js';
+import { getAllPrograms } from "../utils/editorAPI.js";
 import {
   getSavedEditor,
   saveEditor,
@@ -87,7 +85,6 @@ const internalInstance = getCurrentInstance();
 internalInstance.appContext.app._context.config.globalProperties.$df = editor;
 
 const clearEditor = () => {
-  getAllPrograms();
   editor.value.clearModuleSelected();
   deleteEditor();
 };
@@ -99,6 +96,7 @@ const importEditor = () => {
 
 const exportEditor = () => {
   dialogData.value = editor.value.export();
+  console.log(dialogData.value);
   dialogVisible.value = true;
 };
 
@@ -168,10 +166,6 @@ const addNodeToDrawFlow = (name, pos_x, pos_y) => {
   );
 };
 
-watch(editor, (value) => {
-  console.log(value);
-});
-
 //Life Cycle
 onMounted(() => {
   const elements = [...document.getElementsByClassName("drag-drawflow")];
@@ -202,10 +196,13 @@ onMounted(() => {
   getSavedEditor();
   const editorLocalStorage = JSON.parse(localStorage.getItem("PRGS_V1"));
   editor.value.import(editorLocalStorage);
-});
 
-onUpdated(() => {
-  console.log(editor.value);
+  /*getAllPrograms() 
+    .then((data) => {
+      const editorData = data || {};
+      editor.value.import(editorData);
+    })
+    .catch((err) => console.error(err));*/
 });
 </script>
 

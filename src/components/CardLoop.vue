@@ -4,12 +4,6 @@
       <CardHeader title="Loop" :nodeId="nodeId" />
       <CardContainer>
         <CardInput
-          id="loop-initial"
-          title="Initial value"
-          placeholder="Ingresa el valor inicial..."
-          @value="valueInitial = $event"
-        />
-        <CardInput
           id="loop-to"
           title="To"
           placeholder="Ingresa hasta la cantidad de veces a repetir..."
@@ -25,7 +19,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, getCurrentInstance, nextTick, watch } from "vue";
+import { onMounted, ref, getCurrentInstance, nextTick } from "vue";
 import Card from "./card/Card.vue";
 import CardContainer from "./card/CardContainer.vue";
 import CardHeader from "./card/CardHeader.vue";
@@ -44,12 +38,8 @@ const inputNodeA = ref(undefined);
 const operationName = ref("");
 const valueA = ref(0);
 const valueB = ref(0);
-const valueInitial = ref(0);
 const valueEnd = ref(0);
 const valueTotal = ref(0);
-
-watch(valueInitial, (value) => console.log("A:", value));
-watch(valueEnd, (value) => console.log("A:", value));
 
 // Methods
 const buildScript = () => {
@@ -62,7 +52,7 @@ const buildScript = () => {
         if operation == 'mod': total %= value
       return total
 
-      i = ${valueInitial.value}
+      i = 0
       max = ${valueEnd.value}
       value = ${valueB.value}
       total = 0
@@ -78,7 +68,6 @@ const updateDataNode = (value) => {
   buildScript();
 
   drawflow.updateNodeDataFromId(nodeId.value, dataNode.value);
-  console.log(dataNode.value.data);
 };
 
 const calculateOperation = (operation) => {
@@ -108,7 +97,7 @@ const getValueNode = (input) => {
 };
 
 const onCalculate = () => {
-  if (!valueInitial.value && !valueEnd.value) return;
+  if (!valueEnd.value) return;
 
   const { inputs } = drawflow.getNodeFromId(nodeId.value);
   valueB.value = getValueNode(inputs.input_1);
@@ -116,7 +105,7 @@ const onCalculate = () => {
   const { name } = inputNodeA.value;
   operationName.value = name.toLowerCase();
 
-  for (let i = valueInitial.value; i < valueEnd.value; i++) {
+  for (let i = 0; i < valueEnd.value; i++) {
     valueTotal.value = calculateOperation(operationName.value);
     updateDataNode(valueTotal.value);
     valueA.value = valueTotal.value;
@@ -124,7 +113,6 @@ const onCalculate = () => {
 
   //Reset values to prevent bad operations
   valueA.value = 0;
-  valueInitial.value = 0;
   valueEnd.value = 0;
 };
 
