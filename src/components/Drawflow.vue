@@ -70,6 +70,7 @@ import CardValue from "./CardValue.vue";
 import CardOperations from "./CardOperations.vue";
 import CardConditional from "./CardConditional.vue";
 import CardLoop from "./CardLoop.vue";
+import { getAllPrograms } from '../utils/editorAPI.js';
 import {
   getSavedEditor,
   saveEditor,
@@ -86,6 +87,7 @@ const internalInstance = getCurrentInstance();
 internalInstance.appContext.app._context.config.globalProperties.$df = editor;
 
 const clearEditor = () => {
+  getAllPrograms();
   editor.value.clearModuleSelected();
   deleteEditor();
 };
